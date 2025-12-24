@@ -14,7 +14,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,16 +26,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-
+    // ================= CREATE =================
     @Override
     public UserDtoResponse createUser(UserDtoRequest userDtoRequest) {
 
-        // 1. check email
+        // 1. check email uniqueness
         if (userRepository.findByEmail(userDtoRequest.getEmail()).isPresent()) {
             throw new EmailAlreadyExistsException("Email already exists");
         }
-
-
 
         // 2. map dto -> entity
         User user = userMapper.toEntity(userDtoRequest);
@@ -44,55 +41,75 @@ public class UserServiceImpl implements UserService {
         // 3. save
         User savedUser = userRepository.save(user);
 
-        // 4. map entity -> response
+        // 4. map entity -> dto
         return userMapper.toDto(savedUser);
     }
 
     @Override
     public UserDtoResponse updateUser(Long id, UserDtoRequest dto) {
-        User user = userRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("\"User not found with id \" + id)"));
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
 
-        userMapper.toDto(user);
+        // Only update fields from DTO
+        userMapper.updateUserFromDto(dto, user);
 
-        User savedUSer = userRepository.save(user);
-
-        return userMapper.toDto(savedUSer);
+        User savedUser = userRepository.save(user);
+        return userMapper.toDto(savedUser);
     }
 
+    // ================= DELETE =================
     @Override
     public void deleteUser(Long id) {
-        User user = userRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("user notfind with id:"+id));
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found with id " + id)
+                );
 
         userRepository.delete(user);
-
     }
 
+    // ================= GET ALL =================
     @Override
     public Page<UserDtoResponse> getAll(Pageable pageable) {
-        return userRepository.findAll(pageable).map(userMapper::toDto);
+
+        return userRepository.findAll(pageable)
+                .map(userMapper::toDto);
     }
 
+    // ================= GET BY ID =================
     @Override
     public UserDtoResponse getById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("User not found with id " + id));
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found with id " + id)
+                );
 
         UserDtoResponse response = userMapper.toDto(user);
 
-        if(user.getForums() != null){
-            List<Long> formusIds = user.getForums().stream()
+        fillRelationsIds(user, response);
+
+        return response;
+    }
+
+    // ================= PRIVATE HELPERS =================
+    private void fillRelationsIds(User user, UserDtoResponse response) {
+
+        if (user.getForums() != null) {
+            List<Long> forumsIds = user.getForums()
+                    .stream()
                     .map(Forum::getId)
                     .toList();
-        response.setForumsIds(formusIds);
+            response.setForumsIds(forumsIds);
         }
 
-        if(user.getBlogs() != null){
-            List<Long>blogsIds = user.getBlogs()
-                    .stream().map(Blog::getId)
+        if (user.getBlogs() != null) {
+            List<Long> blogsIds = user.getBlogs()
+                    .stream()
+                    .map(Blog::getId)
                     .toList();
             response.setBlogsIds(blogsIds);
         }
-
-        return response;
-
     }
 }

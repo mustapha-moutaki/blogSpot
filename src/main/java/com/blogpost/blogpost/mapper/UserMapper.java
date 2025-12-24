@@ -5,6 +5,7 @@ import com.blogpost.blogpost.dto.response.UserDtoResponse;
 import com.blogpost.blogpost.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
@@ -14,4 +15,6 @@ public interface UserMapper {
     UserDtoResponse toDto(User user);
 
     User toEntity(UserDtoRequest userDtoRequest);
+
+    void updateUserFromDto(UserDtoRequest dto, @MappingTarget User user);
 }

@@ -21,6 +21,5 @@ public class UserDtoResponse {
     private UserRole role;
 
     private List<Long> forumsIds = new ArrayList<>();
-
     private List<Long> blogsIds = new ArrayList<>();
 }
