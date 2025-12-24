@@ -1,24 +1,22 @@
 package com.blogpost.blogpost.dto.response;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
-@Getter
-@Setter
+
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class BlogDtoResponse {
-
+    private Long id;
     private String title;
     private String content;
-
-    private Long userId;
-    private Long forumId;
-
-    private Long categoryId;
-
-    private List<Long> commentsIds;
-
+    private String authorName;
+    private String categoryName;
+    private String forumTitle;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
