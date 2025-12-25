@@ -32,16 +32,15 @@ public class ForumServiceImpl implements ForumService {
     // ================= CREATE =================
     @Override
     public ForumDtoResponse create(ForumDtoRequest dto) {
-
         Forum forum = forumMapper.toEntity(dto);
 
-        // Link owner (User) to the forum
-        if (dto.getUserIds() != null && !dto.getUserIds().isEmpty()) {
-            Long userId = dto.getUserIds().get(0); // Take first user as the owner
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
+        // Link owner (Use the single userId field)
+        if (dto.getUserId() != null) {
+            User user = userRepository.findById(dto.getUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + dto.getUserId()));
             forum.setUser(user);
         } else {
+            // This is what was causing your 404
             throw new ResourceNotFoundException("Owner userId is required");
         }
 
@@ -54,7 +53,6 @@ public class ForumServiceImpl implements ForumService {
         Forum savedForum = forumRepository.save(forum);
         return forumMapper.toDto(savedForum);
     }
-
     // ================= UPDATE =================
     @Override
     public ForumDtoResponse update(Long id, ForumDtoRequest dto) {

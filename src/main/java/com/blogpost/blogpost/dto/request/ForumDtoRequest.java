@@ -21,6 +21,8 @@ public class ForumDtoRequest {
     private String description;
 
 
+    private Long userId;
+
     private List<Long> userIds= new ArrayList<>();
 
     private List<Long>blogsIds = new ArrayList<>();

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/forums")
+@RequestMapping("/v1/forums")
 public class ForumController {
 
     private final ForumService forumService;

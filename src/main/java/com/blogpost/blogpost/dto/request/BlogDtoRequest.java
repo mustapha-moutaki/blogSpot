@@ -27,7 +27,7 @@ public class BlogDtoRequest {
     @NotNull
     private Long forumId;
 
-    @NotBlank(message = "the category is required")
+    @NotNull(message = "the category is required")
     private Long categoryId;
 
     private List<Comment> comments = new ArrayList<>();

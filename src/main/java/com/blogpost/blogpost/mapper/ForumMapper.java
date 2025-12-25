@@ -10,10 +10,11 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ForumMapper {
 
-    // Ensure the target names match your ForumDtoResponse variables exactly
     @Mapping(target = "userIds", ignore = true)
     @Mapping(target = "blogsIds", ignore = true)
     ForumDtoResponse toDto(Forum forum);
 
+    @Mapping(target = "user", ignore = true) // We will set the user manually in Service
+    @Mapping(target = "id", ignore = true)
     Forum toEntity(ForumDtoRequest dto);
 }
