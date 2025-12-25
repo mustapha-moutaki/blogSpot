@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "users")
-public class User {
+public class User extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,8 +31,9 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'USER'")
     private UserRole role;
 
 

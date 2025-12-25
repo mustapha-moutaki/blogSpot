@@ -27,6 +27,5 @@ public class UserDtoRequest {
     @Size(min = 6, max = 50, message = "password must be between 6 and 50 characters")
     private String password;
 
-    @NotNull(message = "role is required")
     private UserRole role;
 }
