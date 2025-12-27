@@ -22,30 +22,61 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .cors(Customizer.withDefaults())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/v1/auth/**").permitAll()
-                        .requestMatchers("/v1/users/current").authenticated() // ✅ change here
-                        .requestMatchers(HttpMethod.GET, "/v1/users/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/categories/**").hasRole("ADMIN")
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//                .csrf(csrf -> csrf.disable())
+//                .cors(Customizer.withDefaults())
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+//                        .requestMatchers("/v1/auth/**").permitAll()
+//                        .requestMatchers("/v1/users/current").authenticated() // ✅ change here
+//                        .requestMatchers(HttpMethod.GET, "/v1/users/**").hasRole("ADMIN")
+//                        .requestMatchers(HttpMethod.POST, "/categories/**").hasRole("ADMIN")
+//
+//                        .requestMatchers(HttpMethod.GET, "/blogs/**", "/forums/**").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/api/v1/users/**").hasRole("ADMIN")
+//                        .requestMatchers(HttpMethod.POST, "/api/v1/categories/**").hasRole("ADMIN")
+//                        .requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll() // Allow GET categories
+//                        .requestMatchers(HttpMethod.GET, "/api/v1/blogs/**", "/api/v1/forums/**").permitAll()
+//                        .anyRequest().authenticated()
+//                )
+//                .httpBasic(Customizer.withDefaults())
+//                .sessionManagement(session -> session
+//                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+//                );
+//
+//        return http.build();
+//    }
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+            .csrf(csrf -> csrf.disable())
+            .cors(Customizer.withDefaults())
+            .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers(HttpMethod.GET, "/blogs/**", "/forums/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .httpBasic(Customizer.withDefaults())
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
-                );
-
-        return http.build();
-    }
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
 
+                    .requestMatchers("/v1/auth/**").permitAll()
+
+                    .requestMatchers(HttpMethod.GET, "/v1/forums/**", "/v1/categories/**", "/v1/blogs/**").permitAll()
+
+                    .requestMatchers(HttpMethod.POST, "/v1/categories/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/v1/categories/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/v1/forums/**").hasRole("ADMIN")
+
+
+                    .anyRequest().authenticated()
+            )
+
+            .httpBasic(Customizer.withDefaults())
+            .sessionManagement(session -> session
+                    .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+            );
+
+    return http.build();
+}
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
