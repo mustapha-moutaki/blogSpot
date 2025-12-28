@@ -1,0 +1,56 @@
+version: "3.8"
+
+services:
+
+  # POSTGRES DATABASE
+  postgres:
+    image: postgres:16-alpine
+    container_name: forum-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - forum-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U forum_user -d forum_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # SPRING BOOT APP
+  app:
+    build: .
+    container_name: forum-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - forum-network
+
+# -----------------------------
+# VOLUMES
+# -----------------------------
+volumes:
+  postgres_data:
+
+# -----------------------------
+# NETWORKS
+# -----------------------------
+networks:
+  forum-network:
+    driver: bridge
