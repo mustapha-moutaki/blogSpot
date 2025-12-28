@@ -19,6 +19,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -95,6 +98,14 @@ public class BlogServiceImpl implements BlogService {
     public Page<BlogDtoResponse> getAll(Pageable pageable) {
         return blogRepository.findAll(pageable)
                 .map(blogMapper::toDto);
+    }
+
+    @Override
+    public List<BlogDtoResponse> getBlogsByForumId(Long forumId) {
+        List<Blog> blogs = blogRepository.findByForumId(forumId);
+        return blogs.stream()
+                .map(blogMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override

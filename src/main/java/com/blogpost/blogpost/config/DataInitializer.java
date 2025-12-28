@@ -22,7 +22,7 @@ public class DataInitializer {
             User admin = new User();
             admin.setFirstName("admin");
             admin.setLastName("last");
-            admin.setEmail("admoin@gmail.com");
+            admin.setEmail("admin@gmail.com");
             admin.setPassword(passwordEncoder.encode("admin123"));
             admin.setRole(UserRole.ADMIN);
 

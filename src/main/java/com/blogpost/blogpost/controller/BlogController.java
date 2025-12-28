@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/v1/blogs")
 @RequiredArgsConstructor
@@ -51,5 +53,10 @@ public class BlogController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         blogService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/forum/{forumId}")
+    public ResponseEntity<List<BlogDtoResponse>> getBlogsByForum(@PathVariable Long forumId) {
+        return ResponseEntity.ok(blogService.getBlogsByForumId(forumId));
     }
 }
